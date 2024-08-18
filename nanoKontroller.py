@@ -209,13 +209,12 @@ def get_audio_devices(pactl, sources={}, sinks={}):
 def get_sink_inputs(pactl, streams={}):
 	sink_inputs = {}
 	
-	for sink_inputs in pactl.sink_input_list():
+	for sink_inputs_item in pactl.sink_input_list():
 		for stream in streams:
-			if sink_inputs.name.endswith(stream):
-				logging.debug('get_sink_inputs: Found stream {} at {}'.format(streams[source.name], streams.name))
-				sink_inputs[streams[source.name]] = streams
-				break
-	return sink_inputs
+			if sink_inputs_item.name.endswith(stream):
+				logging.debug('get_sink_inputs: Found stream {} at {}'.format(streams[stream], sink_inputs_item.name))
+				sink_inputs[streams[stream]] = sink_inputs_item
+	return sink_inputs 
 
 def parse_config(config_path, pactl, evdev, uinput, midi_out):
 	action_map = {}
@@ -296,7 +295,7 @@ def parse_config(config_path, pactl, evdev, uinput, midi_out):
 
 				if len(volume_details) == 1:
 					# No max volume override
-					action_map[keycode] = nano_action_volume_stream(stream=sink_input_devices, pactl=pactl)
+					action_map[keycode] = nano_action_volume_stream(stream=sink_input_devices[actions[1]], pactl=pactl)
 
 			elif actions[0] == 'exec':
 				# Execute a command
